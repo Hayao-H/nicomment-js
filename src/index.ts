@@ -78,6 +78,10 @@ export default class NicommentJS {
      * @param option オプション
      */
     constructor(id: string, width: number, height: number, option?: NicommentJSParam) {
+
+        if (IS_DEVELOPMENT){
+            console.log('[NicommentJS]This is a development version.')
+        }
         
         //引数チェック
         this.checkArgs(id, width, height);
