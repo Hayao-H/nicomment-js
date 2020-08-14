@@ -3,24 +3,71 @@ import { Size, Layer, CommentBase } from './module/Comment';
 import defaultConfig from './module/config';
 
 
-//nicommentJSメインクラス
+/**
+ * メインクラス
+ */
 export default class NicommentJS {
 
-    private readonly ctx: CanvasRenderingContext2D;//context
-    private readonly canvasSize: Size;//canvasサイズ
-    private readonly meta: Meta;//メタ情報
-    private readonly lines: commentLinesBySize;//行数
-    private readonly fixedLines: commentLinesBySize;//行数
-    private readonly fonrSize: fontSize;//fontSize
-    private readonly fixedFonrSize: fontSize;//固定fontSize
+    /**
+     * canvasコンテキスト
+     */
+    private readonly ctx: CanvasRenderingContext2D;
+    /**
+     * canvasサイズ
+     */
+    private readonly canvasSize: Size;
+    /**
+     * メタ情報
+     */
+    private readonly meta: Meta;
+    /**
+     * コメントのサイズごとの行数
+     */
+    private readonly lines: commentLinesBySize;
+    /**
+     * 固定コメントのサイズごとの行数
+     */
+    private readonly fixedLines: commentLinesBySize;
+    /**
+     * フォントサイズ
+     */
+    private readonly fonrSize: fontSize;
+    /**
+     * 固定コメントのフォントサイズ
+     */
+    private readonly fixedFonrSize: fontSize;
+    /**
+     * コメント表示時間
+     */
     private readonly duration: number;
+    /**
+     * フォントサイズに対する行の高さの割合
+     */
     private readonly lineHeight:number;
-    private readonly autoTickDisabled:boolean;//自動更新フラグ
-    private mainLayerName:string;//メインレイヤー
-    private run: boolean;//フラグ
-    private isPlay:boolean;//再生フラグ
-    private layers: Map<string,Layer>;//レイヤー
-    private total: number;//トータルコメ数
+    /**
+     * 自動更新フラグ
+     */
+    private readonly autoTickDisabled:boolean;
+    /**
+     * メインレイヤー
+     */
+    private mainLayerName:string;
+    /**
+     * 実行フラグ
+     */
+    private run: boolean;
+    /**
+     * 再生フラグ
+     */
+    private isPlay:boolean;
+    /**
+     * レイヤー
+     */
+    private layers: Map<string,Layer>;
+    /**
+     * トータルコメ数
+     */
+    private total: number;
 
 
     /**
@@ -126,7 +173,9 @@ export default class NicommentJS {
 
         const layerObj=this.layers.get(layer);
         if (layerObj!==undefined){
-            layerObj.add(text, this.total, customAttr, comType, comSize, { onDispased: onDisposed },vpos)
+            layerObj.add(text, this.total, customAttr, comType, comSize, { onDispased: onDisposed },vpos);
+        } else {
+            throw new Error(NicoExceptions.SEND.LAYER_DOES_NOT_EXIST(layer));
         }
     }
 
@@ -194,7 +243,12 @@ export default class NicommentJS {
         return { big: big, medium: medium, small: small }
     }
 
-    //getContext
+    /**
+     * canvasコンテキストを取得します
+     * @param id ID
+     * @param width 横幅
+     * @param height 高さ
+     */
     private _getContext(id: string, width: number, height: number): CanvasRenderingContext2D {
         const elm: HTMLCanvasElement = document.getElementById(id) as HTMLCanvasElement;
         if (!elm){
@@ -238,7 +292,10 @@ export default class NicommentJS {
         };
     }
 
-    //縁取り色を取得
+    /**
+     * 縁取り色を取得します
+     * @param color 色
+     */
     private getBcolor(color: string): string {
         switch (color) {
             case 'black':
@@ -268,21 +325,32 @@ export default class NicommentJS {
 
 }
 
-//メタ情報
+/**
+ * メタ情報クラス
+ */
 class Meta {
-    count: number;//ループ回数
+    /**
+     * ループ回数
+     */
+    private　count: number;
 
-    //初期化
+    /**
+     * 初期化
+     */
     constructor() {
         this.count = 0;
     }
 
-    //カウントを増やす
+    /**
+     * カウントを増やします
+     */
     loop(): void {
         this.count++;
     }
 
-    //カウントを取得
+    /**
+     * カウントを取得
+     */
     getCount(): number {
         return this.count;
     }
@@ -292,32 +360,97 @@ class Meta {
  * エラー
  */
 const NicoExceptions = {
+    /**
+     * 初期化エラー
+     */
     __INIT__: {
+        /**
+         * 引数エラー
+         */
         ARGUMENTS: {
+            /**
+             * 必要な引数が存在しない
+             */
             NOT_EXIST: {
+                /**
+                 * 高さ
+                 */
                 HEIGHT: '[ERR]argument "height" must be specified.',
+                /**
+                 * 横幅
+                 */
                 WIDTH: '[ERR]argument "width" must be specified.',
+                /**
+                 * ID
+                 */
                 ID: '[ERR]argument "id" must be specified.',
             },
+            /**
+             * 引数の値が不適切である
+             */
             NaN: {
+                /**
+                 * 高さが数字でない
+                 */
                 HEIGHT: (value:string) => `[ERR]${value} is not a number. "height" mus be a number.`,
+                /**
+                 * 横幅が数字でない
+                 */
                 WIDTH: (value:string) => `[ERR]${value} is not a number. "width" mus be a number.`,
             }
         },
+        /**
+         * 要素が存在しない・canvasでない
+         */
         ELEMENT:{
+            /**
+             * 要素が存在しない
+             */
             NOT_EXIST:(id:string)=>{return `[ERR]Canvas Element which id is "${id}" was not found.`},
+            /**
+             * 要素がHTMLCanvasでない
+             */
             NOT_A_CANVAS_ELEMENT:(id:string)=>{return `[ERR]Element which id is "${id}" is not a canvasHTML5 Element.`}
         },
+    },
+    /**
+     * コメント追加時のエラー
+     */
+    SEND:{
+        LAYER_DOES_NOT_EXIST:(name:string)=>{return `[ERR]A layer name is ${name} does not exist.`}
     }
 }
 
-//メインクラスオプション引数
+/**
+ * メインクラスオプション引数
+ */
 interface NicommentJSParam {
+    /**
+     * bigコメントの行数
+     */
     bigLines?: number;
+    /**
+     * 通常コメントの行数
+     */
     mediumLines?: number;
+    /**
+     * smallコメントの行数
+     */
     smallLines?: number;
+    /**
+     * コメントの表示時間
+     */
     duration?: number;
+    /**
+     * デフォルトのレイヤー名
+     */
     layerName?:string;
+    /**
+     * ォントサイズに対する行の高さの割合
+     */
     lineheght?:number;
+    /**
+     * 自動更新を無効にする
+     */
     autoTickDisabled?:boolean;
 }
