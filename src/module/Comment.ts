@@ -186,8 +186,13 @@ export class CommentBase {
 
         //・臨界幅リサイズ
         //コメントの最大幅が描写領域を上回る場合に、描写領域に収まるようにリサイズする
-        if (comWidth > this.canvasSize.width && type !== 'naka' && !this.full) {
+        const widthOverflow:boolean=comWidth > this.canvasSize.width && type !== 'naka';
+        if (widthOverflow && !this.full) {
             font = this._modSize(originalFont, comWidth, this.canvasWidthFlash);
+            this.ctx.font = `${font}px "Yu Gothic"`;
+            comWidth = this.ctx.measureText(text).width;
+        } else if (widthOverflow && this.full){
+            font = this._modSize(originalFont, comWidth, this.canvasSize.width);
             this.ctx.font = `${font}px "Yu Gothic"`;
             comWidth = this.ctx.measureText(text).width;
         }
