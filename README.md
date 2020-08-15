@@ -6,6 +6,9 @@
 - Mozilla Firefoxの[最新版](https://www.mozilla.org/ja/firefox/new/)
 - Microsoft Edgeの[最新版](https://www.microsoft.com/ja-jp/edge)
 
+# デモ
+[こちら](https://hayao-h.github.io/nicomment-js/)をご覧下さい。
+
 # usage
 ## 初期化
 ```javascript
