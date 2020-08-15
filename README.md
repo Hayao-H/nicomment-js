@@ -10,6 +10,17 @@
 [こちら](https://hayao-h.github.io/nicomment-js/)をご覧下さい。
 
 # usage
+## 読み込み
+- html
+```html
+<script src="/path/to/NicommentJS"><script>
+```
+
+- または、Type Scriptファイルをダウンロードして、
+```typescript
+import  NicommentJS  from '/path/to/NicommentJS';
+```
+
 ## 初期化
 ```javascript
 const comment=new NicommentJS(id,width,height,{options});
