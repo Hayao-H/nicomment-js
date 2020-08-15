@@ -95,7 +95,8 @@ export class CommentBase {
      */
     tick(vpos: number): void {
 
-        if (vpos >= this.vpos + this.duration * 100) {
+        //コメントの累計表示時間が既定の2倍以上であった場合、コメントを削除する
+        if (vpos >= this.vpos + this.duration * 200) {
             this.alive = false;
             return;
         }
@@ -417,7 +418,7 @@ export class Layer {
      * @param vpos VPOS
      */
     add(text: string, commentNumber: number, customAttr: Map<string, any>, type: commentPosition = 'naka', size: commentSizeString = 'medium', callBack: { onDispased: () => any }, vpos: number): void {
-        if (this.comments.length > 20) return;
+        if (this.comments.length > 40) return;
         const oprions: commentOption = {
             mode: type,
             color: customAttr.get('color') || '#fff',

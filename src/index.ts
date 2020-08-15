@@ -3,7 +3,6 @@ import { Size, Layer, CommentBase } from './module/Comment';
 import defaultConfig from './module/config';
 import Config from 'sysEnv';
 
-
 /**
  * メインクラス
  */
@@ -300,7 +299,9 @@ export default class NicommentJS {
 
         if (this.isPlay) {
 
-            this.ctx.clearRect(0, 0, this.canvasSize.width, this.canvasSize.height);
+            if (render===undefined||render===true){
+                this.ctx.clearRect(0, 0, this.canvasSize.width, this.canvasSize.height);
+            }
 
             this.layers.forEach(layer => {
                 layer.tick(this.meta.getCount(), vpos, render);
