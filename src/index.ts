@@ -1,6 +1,7 @@
-import { fontSize, sendoption, commentPosition, commentSizeString, commentLinesBySize} from './module/types'
+import { fontSize, sendoption, commentPosition, commentSizeString, commentLinesBySize } from './module/types'
 import { Size, Layer, CommentBase } from './module/Comment';
 import defaultConfig from './module/config';
+import Config from 'sysEnv';
 
 
 /**
@@ -43,15 +44,15 @@ export default class NicommentJS {
     /**
      * フォントサイズに対する行の高さの割合
      */
-    private readonly lineHeight:number;
+    private readonly lineHeight: number;
     /**
      * 自動更新フラグ
      */
-    private readonly autoTickDisabled:boolean;
+    private readonly autoTickDisabled: boolean;
     /**
      * メインレイヤー
      */
-    private mainLayerName:string;
+    private mainLayerName: string;
     /**
      * 実行フラグ
      */
@@ -59,11 +60,11 @@ export default class NicommentJS {
     /**
      * 再生フラグ
      */
-    private isPlay:boolean;
+    private isPlay: boolean;
     /**
      * レイヤー
      */
-    private layers: Map<string,Layer>;
+    private layers: Map<string, Layer>;
     /**
      * トータルコメ数
      */
@@ -79,16 +80,27 @@ export default class NicommentJS {
      */
     constructor(id: string, width: number, height: number, option?: NicommentJSParam) {
 
-        if (IS_DEVELOPMENT){
-            console.log('[NicommentJS]This is a development version.')
+        if (IS_DEVELOPMENT) {
+            Logger.write('このバージョンは開発版のため、不安定な挙動をとる場合があります。\n'
+                + `version:${Config.virsion}\n`
+                + `buildDate:${BUILD_DATE}\n`
+                + `build:${Config.build}`
+                + `bug report:https://github.com/Hayao-H/nicomment-js/issues`
+            )
+        } else if (IS_DEBUG) {
+            Logger.write(`このバージョンはデバッグ版です。\n`
+                + `version:${Config.virsion}\n`
+                + `buildDate:${BUILD_DATE}\n`
+                + `build:${Config.build}`
+            )
         }
-        
+
         //引数チェック
         this.checkArgs(id, width, height);
 
         //context
-        this.ctx= this._getContext(id, width, height);
-        
+        this.ctx = this._getContext(id, width, height);
+
 
         //サイズ
         this.canvasSize = new Size({ height: height, width: width });
@@ -100,7 +112,7 @@ export default class NicommentJS {
         this.duration = option ? option.duration ? option.duration : defaultConfig.duration : defaultConfig.duration;
 
         //自動更新
-        this.mainLayerName=option ? option.layerName ? option.layerName : defaultConfig.defaultLayer : defaultConfig.defaultLayer
+        this.mainLayerName = option ? option.layerName ? option.layerName : defaultConfig.defaultLayer : defaultConfig.defaultLayer
 
         //サイズ・フォント
         this.lineHeight = option ? option.lineheght ? option.lineheght : defaultConfig.lineHeight : defaultConfig.lineHeight;//表示時間
@@ -109,23 +121,31 @@ export default class NicommentJS {
             medium: option ? option.mediumLines ? option.mediumLines : defaultConfig.mediumLines : defaultConfig.mediumLines,
             small: option ? option.smallLines ? option.smallLines : defaultConfig.smallLines : defaultConfig.smallLines
         };
-        this.fixedLines={big:defaultConfig.fix.big,medium:defaultConfig.fix.medium,small:defaultConfig.fix.smal};
-        
+        this.fixedLines = { big: defaultConfig.fix.big, medium: defaultConfig.fix.medium, small: defaultConfig.fix.smal };
+
         this.fonrSize = this._getFontSize(height, this.lines);//fintSIze一覧
-        this.fixedFonrSize=this._getFontSize(height,this.fixedLines);
+        this.fixedFonrSize = this._getFontSize(height, this.fixedLines);
 
         //レイヤー
-        this.mainLayerName=option ? option.layerName ? option.layerName : defaultConfig.defaultLayer : defaultConfig.defaultLayer
-        this.layers=new Map();
-        this.layers.set(this.mainLayerName,new Layer(this.ctx, this.canvasSize, this.lines, this.fonrSize,this.fixedFonrSize, this.duration,this.lineHeight))
+        this.mainLayerName = option ? option.layerName ? option.layerName : defaultConfig.defaultLayer : defaultConfig.defaultLayer
+        this.layers = new Map();
+        this.addLayer(this.mainLayerName);
         this.total = 0;
         this.run = true;
-        this.isPlay=true;
+        this.isPlay = true;
 
         //自動更新フラグ
         this.autoTickDisabled = option ? option.autoTickDisabled ? option.autoTickDisabled : false : false;
 
-        if (!this.autoTickDisabled)this.tick();
+        if (IS_DEBUG){
+            Logger.write(`canvasID:${id}, width:${width}px, height:${height}px`)
+            Logger.write('初期化が完了しました。');
+        }
+
+        if (!this.autoTickDisabled) {
+            Logger.write('更新処理を開始します。');
+            this.tick()
+        };
     }
 
     /**
@@ -155,10 +175,10 @@ export default class NicommentJS {
         const comSize: commentSizeString = option ? option.size ? option.size : 'medium' : 'medium';
         const color: string = option ? option.color ? option.color : '#fff' : '#fff';
         const bcolor: string = this.getBcolor(color);
-        const vpos:number=option ? option.vpos ? option.vpos :0:0;
-        const fontName:string=option?option.fontName?option.fontName:defaultConfig.defaultFont:defaultConfig.defaultFont;
-        const opacity:number=option?option.opacity?option.opacity:defaultConfig.opacity:defaultConfig.opacity;
-        const full:boolean=option?option.full?option.full:false:false;
+        const vpos: number = option ? option.vpos ? option.vpos : 0 : 0;
+        const fontName: string = option ? option.fontName ? option.fontName : defaultConfig.defaultFont : defaultConfig.defaultFont;
+        const opacity: number = option ? option.opacity ? option.opacity : defaultConfig.opacity : defaultConfig.opacity;
+        const full: boolean = option ? option.full ? option.full : false : false;
         const onDisposed: () => any = option ? option.onDisposed ? option.onDisposed : () => { } : () => { };
 
 
@@ -170,16 +190,16 @@ export default class NicommentJS {
         }
         customAttr.set('color', color);
         customAttr.set('bcolor', bcolor);
-        customAttr.set('fontName',fontName);
-        customAttr.set('opacity',opacity);
-        customAttr.set('full',full)
+        customAttr.set('fontName', fontName);
+        customAttr.set('opacity', opacity);
+        customAttr.set('full', full)
 
 
-        const layerObj=this.layers.get(layer);
-        if (layerObj!==undefined){
-            layerObj.add(text, this.total, customAttr, comType, comSize, { onDispased: onDisposed },vpos);
+        const layerObj = this.layers.get(layer);
+        if (layerObj !== undefined) {
+            layerObj.add(text, this.total, customAttr, comType, comSize, { onDispased: onDisposed }, vpos);
         } else {
-            throw new Error(NicoExceptions.SEND.LAYER_DOES_NOT_EXIST(layer));
+            throw new Error(NicoExceptions.LAYER.LAYER_DOES_NOT_EXIST(layer));
         }
     }
 
@@ -201,26 +221,28 @@ export default class NicommentJS {
      * コメントを削除します
      * @param layer レイヤー
      */
-    clear(layer?:string):void{
-        if (layer){
-            const layerObj=this.layers.get(layer)
-            if (layerObj!==undefined){
+    clear(layer?: string): void {
+        if (layer) {
+            const layerObj = this.layers.get(layer)
+            if (layerObj !== undefined) {
                 layerObj.clear();
+            } else {
+                throw new Error(NicoExceptions.LAYER.LAYER_DOES_NOT_EXIST(layer));
             }
         } else {
-            this.layers.forEach(layer=>{
+            this.layers.forEach(layer => {
                 layer.clear();
             })
         }
     }
-    
+
     /**
      * 全ての処理を終了します
      */
-    dispose():void{
-        this.run=false;
-        this.isPlay=false;
-        this.layers.forEach(layer=>{
+    dispose(): void {
+        this.run = false;
+        this.isPlay = false;
+        this.layers.forEach(layer => {
             layer.clear();
         });
         this.ctx.clearRect(0, 0, this.canvasSize.width, this.canvasSize.height);
@@ -255,15 +277,15 @@ export default class NicommentJS {
      */
     private _getContext(id: string, width: number, height: number): CanvasRenderingContext2D {
         const elm: HTMLCanvasElement = document.getElementById(id) as HTMLCanvasElement;
-        if (!elm){
+        if (!elm) {
             throw new Error(NicoExceptions.__INIT__.ELEMENT.NOT_EXIST(id));
-        }  else {
+        } else {
             elm.height = height;
             elm.width = width;
             elm.style.width = `${width}px`;
             elm.style.height = `${height}px`;
-            const ctx=elm.getContext('2d');
-            if (ctx!==null){
+            const ctx = elm.getContext('2d');
+            if (ctx !== null) {
                 return ctx
             } else {
                 throw new Error()
@@ -274,25 +296,21 @@ export default class NicommentJS {
     /**
      * メインループ
      */
-    tick(vpos?:number,render?:boolean): void {
+    tick(vpos?: number, render?: boolean): void {
 
-        if (this.meta.getCount() % 120 === 0) {
-            //console.log('hello!')
-            //console.dir(this.layers[0].getState())
-        }
         if (this.isPlay) {
 
             this.ctx.clearRect(0, 0, this.canvasSize.width, this.canvasSize.height);
 
             this.layers.forEach(layer => {
-                layer.tick(this.meta.getCount(),vpos,render);
+                layer.tick(this.meta.getCount(), vpos, render);
             })
 
             this.meta.loop();//インクリメント
         }
 
-        if (this.run&&!this.autoTickDisabled){
-            requestAnimationFrame(()=>{this.tick(vpos)});
+        if (this.run && !this.autoTickDisabled) {
+            requestAnimationFrame(() => { this.tick(vpos) });
         };
     }
 
@@ -311,20 +329,53 @@ export default class NicommentJS {
                 return '#000';
         }
     }
-    
+
     /**
      * 指定した位置に存在するコメントを取得します
      * @param x X座標
      * @param y Y座標
      */
-    get(x:number,y:number):CommentBase|undefined{
-        let comment:CommentBase|undefined=undefined;
-        this.layers.forEach(layer=>{
-            comment=layer.get(x,y);
+    get(x: number, y: number): CommentBase | undefined {
+        let comment: CommentBase | undefined = undefined;
+        this.layers.forEach(layer => {
+            comment = layer.get(x, y);
             if (comment) return false;
         })
 
         return comment;
+    }
+
+    /**
+     * レイヤーを追加します
+     * @param layerName レイヤー名
+     */
+    addLayer(layerName:string):void{
+        if (this.layers.has(layerName)){
+            throw new Error(NicoExceptions.LAYER.DUPLICATION(layerName));
+        } else {
+            this.layers.set(layerName,new Layer(this.ctx, this.canvasSize, this.lines, this.fonrSize, this.fixedFonrSize, this.duration, this.lineHeight))
+        }
+        
+        if (IS_DEBUG){
+            Logger.write(`レイヤー "${layerName}" を追加しました。`)
+        }
+
+    }
+
+    /**
+     * レイヤーを削除します
+     * @param layerName レイヤー名
+     */
+    removeLayer(layerName:string):void{
+        if (this.layers.has(layerName)){
+            throw new Error(NicoExceptions.LAYER.DUPLICATION(layerName));
+        } else {
+            this.layers.delete(layerName)
+        }
+
+        if (IS_DEBUG){
+            Logger.write(`レイヤー "${layerName}" を削除しました。`)
+        }
     }
 
 }
@@ -336,7 +387,7 @@ class Meta {
     /**
      * ループ回数
      */
-    private　count: number;
+    private count: number;
 
     /**
      * 初期化
@@ -357,6 +408,19 @@ class Meta {
      */
     getCount(): number {
         return this.count;
+    }
+}
+
+/**
+ * ログ
+ */
+class Logger{
+    /**
+     * ログを出力する
+     * @param log 本文
+     */
+    static write(log:string):void{
+        console.log(`[NicommentJS]${log}`)
     }
 }
 
@@ -396,33 +460,45 @@ const NicoExceptions = {
                 /**
                  * 高さが数字でない
                  */
-                HEIGHT: (value:string) => `[ERR]${value} is not a number. "height" mus be a number.`,
+                HEIGHT: (value: string) => `[ERR]${value} is not a number. "height" mus be a number.`,
                 /**
                  * 横幅が数字でない
                  */
-                WIDTH: (value:string) => `[ERR]${value} is not a number. "width" mus be a number.`,
+                WIDTH: (value: string) => `[ERR]${value} is not a number. "width" mus be a number.`,
             }
         },
         /**
          * 要素が存在しない・canvasでない
          */
-        ELEMENT:{
+        ELEMENT: {
             /**
              * 要素が存在しない
              */
-            NOT_EXIST:(id:string)=>{return `[ERR]Canvas Element which id is "${id}" was not found.`},
+            NOT_EXIST: (id: string) => { return `[ERR]Canvas Element which id is "${id}" was not found.` },
             /**
              * 要素がHTMLCanvasでない
              */
-            NOT_A_CANVAS_ELEMENT:(id:string)=>{return `[ERR]Element which id is "${id}" is not a canvasHTML5 Element.`}
+            NOT_A_CANVAS_ELEMENT: (id: string) => { return `[ERR]Element which id is "${id}" is not a canvasHTML5 Element.` }
         },
     },
     /**
      * コメント追加時のエラー
      */
-    SEND:{
-        LAYER_DOES_NOT_EXIST:(name:string)=>{return `[ERR]A layer name is ${name} does not exist.`}
-    }
+    SEND: {
+    },
+    /** 
+     * レイヤー関係のエラー
+     */
+    LAYER:{
+        /** 
+         * 重複
+         */
+        DUPLICATION:(name:string)=>{return `[ERR]The layer name ${name} already exists.`},
+        /**
+         * レイヤーが存在しない
+         */
+        LAYER_DOES_NOT_EXIST: (name: string) => { return `[ERR]A layer name is ${name} does not exist.` },
+    },
 }
 
 /**
@@ -448,13 +524,13 @@ interface NicommentJSParam {
     /**
      * デフォルトのレイヤー名
      */
-    layerName?:string;
+    layerName?: string;
     /**
      * ォントサイズに対する行の高さの割合
      */
-    lineheght?:number;
+    lineheght?: number;
     /**
      * 自動更新を無効にする
      */
-    autoTickDisabled?:boolean;
+    autoTickDisabled?: boolean;
 }
