@@ -513,9 +513,10 @@ export class Layer {
         this.ctx.font = `bold ${comment.fontSize}px "${comment.fontName}"`;
         //描写時に考慮する正負
         const deltaMinusOrPlus: number = comment.type === 'shita' ? -1 : 1;
-        comment.textForRender.forEach((text, index) => {
-            this.ctx.fillText(text, comment.left, comment.top + comment.fontSize * index * deltaMinusOrPlus + comment.offsetY);
-        });
+        const delta=deltaMinusOrPlus*comment.fontSize;
+        for (let i=0;i<comment.textForRender.length;i++){
+            this.ctx.fillText(comment.textForRender[i], comment.left, comment.top+ comment.offsetY+delta*i);
+        }
     }
 
     /**
@@ -555,8 +556,8 @@ export class Layer {
     private _appendShita(comment: CommentBase) {
         //shitaコメント
         let bottom = this.canvasSize.height;
-        for (let i = 0; i < this.maxlines; i++) {
-            if (this.shita[i] && !comment.fixed) {
+        for (let i = 0; i < 40; i++) {
+            if (this.shita[i] &&this.shita[i].alive&& !comment.fixed) {
                 bottom -= this.shita[i].overallSize;
             };
 
@@ -593,8 +594,8 @@ export class Layer {
     private _appendUe(comment: CommentBase) {
         //shitaコメント
         let top = 0;
-        for (let i = 0; i < this.maxlines; i++) {
-            if (this.ue[i] && !comment.fixed) {
+        for (let i = 0; i < 40; i++) {
+            if (this.ue[i]&&this.ue[i].alive&&!comment.fixed) {
                 top += this.ue[i].overallSize;
             };
 
@@ -603,7 +604,7 @@ export class Layer {
                 case this.ue.length <= i:
                 case !this.ue[i].alive:
                 case comment.fixed:
-                case top + comment.overallSize > this.canvasSize.height:
+                case top + comment.overallSize+comment.offsetY> this.canvasSize.height:
                     break;
                 default:
                     continue;
@@ -611,7 +612,7 @@ export class Layer {
 
             if (comment.fixed) {
                 comment.top = 0;
-            } else if (this.ue[i]) {
+            } else if (top + comment.overallSize+comment.offsetY > this.canvasSize.height) {
                 comment.top = Math.random() * (this.canvasSize.height - comment.overallSize)
             } else {
                 comment.top = top;

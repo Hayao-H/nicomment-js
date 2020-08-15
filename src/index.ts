@@ -142,7 +142,7 @@ export default class NicommentJS {
         }
 
         if (!this.autoTickDisabled) {
-            Logger.write('更新処理を開始します。');
+             if(IS_DEBUG)Logger.write('更新処理を開始します。');
             this.tick()
         };
     }
