@@ -1,6 +1,10 @@
 # nicomment-js
 ニコニコ動画ライクなコメントを描写する為のJavaScriptライブラリです。
 
+# 対応ブラウザ (Windowsのみ)
+- Google Chromeの[最新版](https://www.google.com/intl/ja_jp/chrome/)
+- Mozilla Firefoxの[最新版](https://www.mozilla.org/ja/firefox/new/)
+- Microsoft Edgeの[最新版](https://www.microsoft.com/ja-jp/edge)
 
 # usage
 ## 初期化
@@ -86,7 +90,11 @@ comment.removeLayer('レイヤー名');
 ```
 
 # デフォルトの設定について
-本ライブラリは、デフォルトではニコニコ動画におけるコメント機能の仕様と互換性を持つように設定されています。したがって、下のように二重リサイズを前提としたコメントアートも描写することが出来ます。 
+本ライブラリは、デフォルトではニコニコ動画におけるコメント機能の仕様と互換性を持つように設定されています。したがって、下のように二重リサイズを前提としたコメントアートも描写することが出来ます。
 
 ![sm11729204](/img/readme/only_my_railgun_01.png)
 ![sm11729204](/img/readme/only_my_railgun_02.png)
+
+# コメント機能の仕様関連で、参考にさせていただいたWebサイト
+- [コメントアートwiki②](https://w.atwiki.jp/commentart2/)
+- [ニコニコ大百科: コメント](https://dic.nicovideo.jp/a/%E3%82%B3%E3%83%A1%E3%83%B3%E3%83%88)
