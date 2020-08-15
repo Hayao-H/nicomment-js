@@ -24,17 +24,16 @@ comment.send(text,{type:fuga,color:hoge});
 ```
 >send(**表示したいコメント**,**オプション(オブジェクト)**)の形式です。
 
-key|説明
----|---
-text|コメント
-layer|レイヤー名([詳細](#レイヤーについて]))
-type|コメントの描写位置。naka,ue,shitaのいずれか。
-color|コメントの色
-customAttr|カスタム属性(オブジェクト)
-size|コメントの大きさ(big/small/demiumのいずれか)
-color|コメントの描写色
-fontNam|フォント名
-opacity|コメントの透過度(0～1)
+key|説明|デフォルト値
+---|---|---
+text|コメント|**必須**
+layer|レイヤー名([詳細](#レイヤーについて]))|base
+type|コメントの描写位置。naka,ue,shitaのいずれか。|naka
+customAttr|カスタム属性(オブジェクト)|-
+size|コメントの大きさ(big/small/demiumのいずれか)|medium
+color|コメントの描写色|white
+fontNam|フォント名|MS Pゴシック
+opacity|コメントの透過度(0～1)|1
 
 ## 画面上に描写されているコメントを削除する
 - 全て削除
@@ -98,3 +97,7 @@ comment.removeLayer('レイヤー名');
 # コメント機能の仕様関連で、参考にさせていただいたWebサイト
 - [コメントアートwiki②](https://w.atwiki.jp/commentart2/)
 - [ニコニコ大百科: コメント](https://dic.nicovideo.jp/a/%E3%82%B3%E3%83%A1%E3%83%B3%E3%83%88)
+
+# 権利関係
+**諸般の事情により本ライブラリーの公開を予告なしに停止する場合がございます。** ご了承下さい。
+また、何か権利上の問題がございましたら、GitHubのissueから連絡して下さると幸いです。
