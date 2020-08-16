@@ -1,0 +1,33 @@
+{
+  "name": "nicommentjs",
+  "version": "1.01",
+  "description": "ニコニコ動画ライクなコメントを描写する為のJavaScriptライブラリです。",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:dev": "set NODE_ENV=DEV&webpack --mode development --progress --colors",
+    "build:pro": "webpack --mode production --progress --colors",
+    "build:debug": "set NODE_ENV=DEB&webpack --mode production --progress --colors"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hayao-H/nicomment-js.git"
+  },
+  "author": "Hayao-H",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Hayao-H/nicomment-js/issues"
+  },
+  "homepage": "https://github.com/Hayao-H/nicomment-js#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.11.1",
+    "@babel/preset-env": "^7.11.0",
+    "babel-loader": "^8.1.0",
+    "hard-source-webpack-plugin": "^0.13.1",
+    "ts-loader": "^8.0.2",
+    "typescript": "^3.9.7",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
+  }
+}
