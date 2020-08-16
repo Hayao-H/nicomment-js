@@ -1,6 +1,15 @@
 
 window.onload=()=>{
-    const comment=new NicommentJS('comment',854,480);
+    const windowWidth=window.innerWidth;
+    let comment;
+    if (windowWidth>854+32){
+        comment=new NicommentJS('comment',854,480);
+    } else {
+        const width=windowWidth-32;
+        const height=width/16*9;
+        $('#comment').css({height:`${height}px`,width:`${width}px`})
+        comment=new NicommentJS('comment',width,height);
+    }
     $('#naka').on('click',handleClick);
     $('#shita').on('click',handleClick);
     $('#ue').on('click',handleClick);
