@@ -41,10 +41,6 @@ export default class NicommentJS {
      */
     private readonly duration: number;
     /**
-     * フォントサイズに対する行の高さの割合
-     */
-    private readonly lineHeight: number;
-    /**
      * 自動更新フラグ
      */
     private readonly autoTickDisabled: boolean;
@@ -84,7 +80,7 @@ export default class NicommentJS {
                 + `version:${Config.version}@build:${BUILD_DATE_DEV}\n`
                 + `buildDate:${BUILD_DATE}\n`
                 + `build:${Config.build}\n`
-                + `bug report: https://github.com/Hayao-H/nicomment-js/issues`
+                + `bug: https://github.com/Hayao-H/nicomment-js/issues`
             )
         } else if (IS_DEBUG) {
             Logger.write(`このバージョンはデバッグ版です。\n`
@@ -114,7 +110,6 @@ export default class NicommentJS {
         this.mainLayerName = option ? option.layerName ? option.layerName : defaultConfig.defaultLayer : defaultConfig.defaultLayer
 
         //サイズ・フォント
-        this.lineHeight = option ? option.lineheght ? option.lineheght : defaultConfig.lineHeight : defaultConfig.lineHeight;//表示時間
         this.lines = {
             big: option ? option.bigLines ? option.bigLines : defaultConfig.bigLines : defaultConfig.bigLines,
             medium: option ? option.mediumLines ? option.mediumLines : defaultConfig.mediumLines : defaultConfig.mediumLines,
@@ -356,7 +351,7 @@ export default class NicommentJS {
         if (this.layers.has(layerName)){
             throw new Error(NicoExceptions.LAYER.DUPLICATION(layerName));
         } else {
-            this.layers.set(layerName,new Layer(this.ctx, this.canvasSize, this.lines, this.fonrSize, this.fixedFonrSize, this.duration, this.lineHeight))
+            this.layers.set(layerName,new Layer(this.ctx, this.canvasSize, this.lines, this.fonrSize, this.fixedFonrSize, this.duration))
         }
         
         if (IS_DEBUG){
@@ -528,10 +523,6 @@ interface NicommentJSParam {
      * デフォルトのレイヤー名
      */
     layerName?: string;
-    /**
-     * ォントサイズに対する行の高さの割合
-     */
-    lineheght?: number;
     /**
      * 自動更新を無効にする
      */

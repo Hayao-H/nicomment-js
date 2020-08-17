@@ -26,7 +26,6 @@ export class CommentBase {
     delta: number = 0;//1コマ当たりのX座標の変量
     left: number = 0;//X座標
     top: number = 0;//Y座標(原点は左上)
-    offsetY: number;//Y方向のパディング
     reveal: number = 0;//コメントが画面右から完全に露出するまでのコマ数
     touch: number = 0;//コメントの左端が画面左に到達するまでのコマ数
     fontSize: number;//フォントサイズ
@@ -74,7 +73,7 @@ export class CommentBase {
 
         //フォント関係
         this.fontSizeString = param.option.commentSize;
-        [this.fontSize, this.width, this.offsetY] = this._getFont(this.text[this.maxLengthIndex], this.canvasSize, this.canvasWidthFlash, param.option.commentSize, param.fontSize, param.fixedFontSize, this.type, param.option.lineheight);
+        [this.fontSize, this.width] = this._getFont(this.text[this.maxLengthIndex], this.canvasSize, this.canvasWidthFlash, param.option.commentSize, param.fontSize, param.fixedFontSize, this.type);
         this.fontSizeString = param.option.commentSize;
         this.overallSize = this.fontSize * this.selfLines;
 
@@ -169,7 +168,7 @@ export class CommentBase {
     }
 
     //fontを決定する
-    private _getFont(text: string, canvasSize: Size, flashWidth: number, commentSize: commentSizeString, fontSize: fontSize, fixedFontSize: fontSize, type: commentPosition, lineHeight: number): [number, number, number] {
+    private _getFont(text: string, canvasSize: Size, flashWidth: number, commentSize: commentSizeString, fontSize: fontSize, fixedFontSize: fontSize, type: commentPosition): [number, number] {
 
         let originalFont: number = this._getSize(commentSize, fontSize);
         let font: number = originalFont;
@@ -198,9 +197,7 @@ export class CommentBase {
             comWidth = this.ctx.measureText(text).width;
         }
 
-        const offsetY: number = type === 'shita' ? font * (lineHeight - 1) * -1 : font * (lineHeight - 1);
-
-        return [font, comWidth, offsetY];
+        return [font, comWidth];
 
     }
 
@@ -381,15 +378,13 @@ export class Layer {
     private ue: Array<CommentBase>;//ueコメント配列
     private maxlines: number;//最大行数(smallコメと同じになる)
     private comments: Array<CommentBase>;//総合コメント
-    readonly lineHeight: number;//fontSizeに対する行の高さの比率
     private onDisaposed: Function = () => { };
 
     //初期化
-    constructor(ctx: CanvasRenderingContext2D, canvasSize: Size, lines: commentLinesBySize, commentSize: fontSize, commentSizeFixed: fontSize, duration: number, lineHeight: number) {
+    constructor(ctx: CanvasRenderingContext2D, canvasSize: Size, lines: commentLinesBySize, commentSize: fontSize, commentSizeFixed: fontSize, duration: number) {
         this.ctx = ctx;
         this.canvasSize = canvasSize;
         this.canvasWidthFlash = canvasSize.height / 3 * 4;
-        this.lineHeight = lineHeight;
         this.lines = lines;
         this.fonrSize = commentSize;
         this.fixedFonrSize = commentSizeFixed;
@@ -420,7 +415,6 @@ export class Layer {
             duration: this.duration,
             customAttr: customAttr,
             commentSize: size,
-            lineheight: this.lineHeight,
             vpos: vpos,
             fontName: customAttr.get('fontName'),
             opacity: customAttr.get('opacity'),
@@ -509,7 +503,7 @@ export class Layer {
         const deltaMinusOrPlus: number = comment.type === 'shita' ? -1 : 1;
         const delta = deltaMinusOrPlus * comment.fontSize;
         for (let i = 0; i < comment.textForRender.length; i++) {
-            this.ctx.fillText(comment.textForRender[i], comment.left, comment.top + comment.offsetY + delta * i);
+            this.ctx.fillText(comment.textForRender[i], comment.left, comment.top + delta * i);
         }
     }
 
@@ -562,7 +556,7 @@ export class Layer {
                 //固定コメントであった場合
                 case comment.fixed:
                 //コメントが表示限界を超える場合
-                case bottom - comment.overallSize + comment.offsetY < 0:
+                case bottom - comment.overallSize < 0:
                     break;
                 default:
                     continue;
@@ -570,8 +564,8 @@ export class Layer {
 
             if (comment.fixed) {
                 comment.top = this.canvasSize.height - comment.fontSize;
-            } else if (bottom - comment.overallSize+comment.offsetY < 0) {
-                comment.top = Math.random() * (this.canvasSize.height - comment.overallSize + comment.offsetY)
+            } else if (bottom - comment.overallSize < 0) {
+                comment.top = Math.random() * (this.canvasSize.height - comment.overallSize)
             } else {
                 comment.top = bottom - comment.overallSize;
             };
@@ -598,7 +592,7 @@ export class Layer {
                 case this.ue.length <= i:
                 case !this.ue[i].alive:
                 case comment.fixed:
-                case top + comment.overallSize + comment.offsetY > this.canvasSize.height:
+                case top + comment.overallSize > this.canvasSize.height:
                     break;
                 default:
                     continue;
@@ -606,7 +600,7 @@ export class Layer {
 
             if (comment.fixed) {
                 comment.top = 0;
-            } else if (top + comment.overallSize + comment.offsetY > this.canvasSize.height) {
+            } else if (top + comment.overallSize > this.canvasSize.height) {
                 comment.top = Math.random() * (this.canvasSize.height - comment.overallSize)
             } else {
                 comment.top = top;

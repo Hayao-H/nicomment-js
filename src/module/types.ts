@@ -27,7 +27,6 @@ export interface commentOption {
     readonly commentSize: commentSizeString;
     readonly duration: number;
     readonly customAttr: Map<string, any>;
-    readonly lineheight:number;
     readonly vpos:number;
     readonly fontName:string;
     readonly opacity:number;
