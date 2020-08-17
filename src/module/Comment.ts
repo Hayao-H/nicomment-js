@@ -209,8 +209,6 @@ export class CommentBase {
         return font * canvasWidth / width;
     }
 
-    //改行リサイズ
-
     //fontSize取得
     private _getSize(commentSize: commentSizeString, fontSize: fontSize): number {
         switch (commentSize) {
@@ -249,7 +247,7 @@ export class CommentBase {
     private _formatComment(origin: string, commentPos: commentPosition): Array<string> {
         let formated: Array<string> = datautl.splitter(origin, '\n');
         formated = this._deleteBlank(formated);
-        formated = this._deleteFirstAndlastBlank(formated);
+        formated = this._deleteFirstAndLastBlank(formated);
         formated = this._sortByType(formated, commentPos)
         return formated;
     }
@@ -294,7 +292,7 @@ export class CommentBase {
      * 最初と最後の空白行を削除します。
      * @param comments コメントのリスト
      */
-    private _deleteFirstAndlastBlank(comments: Array<string>): Array<string> {
+    private _deleteFirstAndLastBlank(comments: Array<string>): Array<string> {
         const deleted = [...comments];
         for (const comment of comments) {
             if (!comment) {
@@ -341,10 +339,6 @@ export class CommentBase {
             } else {
                 break;
             }
-        }
-
-        if (this.customAttr.get('commentNumber') === 955601) {
-            console.log(formated)
         }
 
         return formated;
@@ -576,7 +570,7 @@ export class Layer {
 
             if (comment.fixed) {
                 comment.top = this.canvasSize.height - comment.fontSize;
-            } else if (bottom - comment.overallSize < 0) {
+            } else if (bottom - comment.overallSize+comment.offsetY < 0) {
                 comment.top = Math.random() * (this.canvasSize.height - comment.overallSize + comment.offsetY)
             } else {
                 comment.top = bottom - comment.overallSize;
@@ -588,7 +582,7 @@ export class Layer {
     }
 
     /**
-     * shitaコメントを追加する
+     * ueコメントを追加する
      * @param comment コメントオブジェクト
      */
     private _appendUe(comment: CommentBase) {
