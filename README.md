@@ -109,7 +109,20 @@ comment.removeLayer('レイヤー名');
 ![sm11729204](/img/readme/only_my_railgun_02.png)
 
 また、アスキーアート型のCAも描写可能です。
+
 ![sm500873](/img/readme/sos_kumikyoku.png)
+
+# コード例 (Type Script)
+```typescript
+import {NicommentJS} from '/src/index.ts';
+const comment=new NicommentJS('comment',400,800);
+comment.send('Hello World!',{color:'green'});//Hello World
+comment.pause();//一時停止
+setTimeout(()=>{
+  comment.play();//3000ms後に処理再開
+},3000);
+comment.dispose();//終了
+```
 
 
 # コメント機能の仕様関連で、参考にさせていただいたWebサイト
