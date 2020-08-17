@@ -187,12 +187,12 @@ export class CommentBase {
 
         //・臨界幅リサイズ
         //コメントの最大幅が描写領域を上回る場合に、描写領域に収まるようにリサイズする
-        const widthOverflow:boolean=comWidth > this.canvasSize.width && type !== 'naka';
+        const widthOverflow: boolean = comWidth > this.canvasSize.width && type !== 'naka';
         if (widthOverflow && !this.full) {
             font = this._modSize(originalFont, comWidth, this.canvasWidthFlash);
             this.ctx.font = `${font}px "Yu Gothic"`;
             comWidth = this.ctx.measureText(text).width;
-        } else if (widthOverflow && this.full){
+        } else if (widthOverflow && this.full) {
             font = this._modSize(originalFont, comWidth, this.canvasSize.width);
             this.ctx.font = `${font}px "Yu Gothic"`;
             comWidth = this.ctx.measureText(text).width;
@@ -466,10 +466,10 @@ export class Layer {
      * 更新処理
      * @param counter ループ回数
      */
-    tick(counter: number, vpos?: number, render?: boolean): void {
+    tick(counter: number, options?: { vpos?: number, render?: boolean }): void {
 
-        const currentVpos: number = vpos ? vpos : 0;
-        const doRender: boolean = render === false ? false : true;
+        const currentVpos: number = options ? options.vpos ? options.vpos : 0 : 0;
+        const doRender: boolean = options ? options.render ? true : false : true;
 
         if (this.comments.length) {
             this.comments.forEach(comment => {
@@ -513,9 +513,9 @@ export class Layer {
         this.ctx.font = `bold ${comment.fontSize}px "${comment.fontName}"`;
         //描写時に考慮する正負
         const deltaMinusOrPlus: number = comment.type === 'shita' ? -1 : 1;
-        const delta=deltaMinusOrPlus*comment.fontSize;
-        for (let i=0;i<comment.textForRender.length;i++){
-            this.ctx.fillText(comment.textForRender[i], comment.left, comment.top+ comment.offsetY+delta*i);
+        const delta = deltaMinusOrPlus * comment.fontSize;
+        for (let i = 0; i < comment.textForRender.length; i++) {
+            this.ctx.fillText(comment.textForRender[i], comment.left, comment.top + comment.offsetY + delta * i);
         }
     }
 
@@ -557,7 +557,7 @@ export class Layer {
         //shitaコメント
         let bottom = this.canvasSize.height;
         for (let i = 0; i < 40; i++) {
-            if (this.shita[i] &&this.shita[i].alive&& !comment.fixed) {
+            if (this.shita[i] && this.shita[i].alive && !comment.fixed) {
                 bottom -= this.shita[i].overallSize;
             };
 
@@ -595,7 +595,7 @@ export class Layer {
         //shitaコメント
         let top = 0;
         for (let i = 0; i < 40; i++) {
-            if (this.ue[i]&&this.ue[i].alive&&!comment.fixed) {
+            if (this.ue[i] && this.ue[i].alive && !comment.fixed) {
                 top += this.ue[i].overallSize;
             };
 
@@ -604,7 +604,7 @@ export class Layer {
                 case this.ue.length <= i:
                 case !this.ue[i].alive:
                 case comment.fixed:
-                case top + comment.overallSize+comment.offsetY> this.canvasSize.height:
+                case top + comment.overallSize + comment.offsetY > this.canvasSize.height:
                     break;
                 default:
                     continue;
@@ -612,7 +612,7 @@ export class Layer {
 
             if (comment.fixed) {
                 comment.top = 0;
-            } else if (top + comment.overallSize+comment.offsetY > this.canvasSize.height) {
+            } else if (top + comment.overallSize + comment.offsetY > this.canvasSize.height) {
                 comment.top = Math.random() * (this.canvasSize.height - comment.overallSize)
             } else {
                 comment.top = top;
@@ -624,24 +624,27 @@ export class Layer {
     }
 
     /**
-     * 指定した位置に存在するコメントを取得します
+     * 指定した位置に存在するコメントの配列を取得します
      * @param x X座標
      * @param y Y座標
      */
-    get(x: number, y: number): CommentBase | undefined {
-        const naka: CommentBase | undefined = this.naka.get(x, y);
+    get(x: number, y: number):Array<CommentBase> {
+        const comments: Array<CommentBase> = [];
+        const naka = this.naka.get(x, y);
         if (naka !== undefined) {
-            return naka
-        } else {
-            return this.comments.find(comment => {
-                const half: number = comment.width / 2;
-                const isX: boolean = x > comment.left - half && x < comment.left + half;
-                const isY: boolean = y > comment.top && y < comment.top + comment.overallSize;
-                if (isX && isY) {
-                    return true;
-                }
-            })
-        };
+            comments.push(naka)
+        }
+
+        const ueshita:Array<CommentBase>=this.comments.filter(comment => {
+            const half: number = comment.width / 2;
+            const isX: boolean = x > comment.left - half && x < comment.left + half;
+            const isY: boolean = y > comment.top && y < comment.top + comment.overallSize;
+            return isX && isY; 
+        });
+
+        comments.push(...ueshita)
+
+        return comments;
     }
 }
 

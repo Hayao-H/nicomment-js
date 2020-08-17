@@ -295,23 +295,26 @@ export default class NicommentJS {
     /**
      * メインループ
      */
-    tick(vpos?: number, render?: boolean): void {
+    tick(options?:{vpos?: number, render?: boolean}): void {
 
         if (this.isPlay) {
 
-            if (render===undefined||render===true){
+            const doRender:boolean=options?options.render? true : false:true;
+            const currentVpos: number = options?options.vpos ? options.vpos : 0:0;
+
+            if (doRender){
                 this.ctx.clearRect(0, 0, this.canvasSize.width, this.canvasSize.height);
             }
 
             this.layers.forEach(layer => {
-                layer.tick(this.meta.getCount(), vpos, render);
+                layer.tick(this.meta.getCount(), {vpos:currentVpos, render:doRender});
             })
 
             this.meta.loop();//インクリメント
         }
 
         if (this.run && !this.autoTickDisabled) {
-            requestAnimationFrame(() => { this.tick(vpos) });
+            requestAnimationFrame(() => { this.tick(options) });
         };
     }
 
@@ -336,14 +339,13 @@ export default class NicommentJS {
      * @param x X座標
      * @param y Y座標
      */
-    get(x: number, y: number): CommentBase | undefined {
-        let comment: CommentBase | undefined = undefined;
+    get(x: number, y: number): Array<CommentBase>  {
+        const comments: Array<CommentBase> = [];
         this.layers.forEach(layer => {
-            comment = layer.get(x, y);
-            if (comment) return false;
+            comments.push(...layer.get(x, y));
         })
 
-        return comment;
+        return comments;
     }
 
     /**
