@@ -1,5 +1,4 @@
 export default{
-    virsion:'v1.00',
+    version:'v1.02',
     build:'Debug',
-    buildDate:'2020/08/15 08:15 Asia/Toyko',
 }

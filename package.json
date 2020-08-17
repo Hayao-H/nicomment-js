@@ -1,6 +1,6 @@
 {
   "name": "nicommentjs",
-  "version": "1.01",
+  "version": "1.0.2",
   "description": "ニコニコ動画ライクなコメントを描写する為のJavaScriptライブラリです。",
   "main": "src/index.ts",
   "scripts": {

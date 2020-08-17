@@ -81,14 +81,14 @@ export default class NicommentJS {
 
         if (IS_DEVELOPMENT) {
             Logger.write('このバージョンは開発版のため、不安定な挙動をとる場合があります。\n'
-                + `version:${Config.virsion}\n`
+                + `version:${Config.version}@build:${BUILD_DATE_DEV}\n`
                 + `buildDate:${BUILD_DATE}\n`
-                + `build:${Config.build}`
-                + `bug report:https://github.com/Hayao-H/nicomment-js/issues`
+                + `build:${Config.build}\n`
+                + `bug report: https://github.com/Hayao-H/nicomment-js/issues`
             )
         } else if (IS_DEBUG) {
             Logger.write(`このバージョンはデバッグ版です。\n`
-                + `version:${Config.virsion}\n`
+                + `version:${Config.version}\n`
                 + `buildDate:${BUILD_DATE}\n`
                 + `build:${Config.build}`
             )
