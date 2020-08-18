@@ -1,10 +1,14 @@
 # nicomment-js
 某ニ〇ニコ動画ライクなコメントを描写する為のJavaScriptライブラリです。
 
-# 対応ブラウザ (Windowsのみ)
+# 対応ブラウザ
+## Windows
 - Google Chromeの[最新版](https://www.google.com/intl/ja_jp/chrome/)
 - Mozilla Firefoxの[最新版](https://www.mozilla.org/ja/firefox/new/)
 - Microsoft Edgeの[最新版](https://www.microsoft.com/ja-jp/edge)
+
+## Android
+- Firefoxの[最新版](https://play.google.com/store/apps/details?id=org.mozilla.firefox)
 
 # デモ
 [こちら](https://hayao-h.github.io/nicomment-js/)をご覧下さい。
